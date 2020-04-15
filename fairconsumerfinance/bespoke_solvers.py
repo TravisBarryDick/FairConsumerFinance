@@ -12,7 +12,7 @@ def max_return_constrain_variance(vals, covars, risk_limit, budget, long_only=Fa
     obj = cp.Maximize(weights.T @ vals)
     constrs = [(cp.sum(weights) <= budget), (cp.quad_form(weights, covars) <= risk_limit)]
     if long_only:
-        constrs.append(cp.min(weights) >= 0)
+        constrs.append(weights >= 0)
 
     prob = cp.Problem(obj, constrs)
     prob.solve()
@@ -30,7 +30,7 @@ def min_risk_constrain_returns(vals, covars, return_threshold, budget, long_only
     obj = cp.Minimize(cp.quad_form(weights, covars))
     constrs = [(cp.sum(weights) <= budget), (weights.T @ vals >= return_threshold)]
     if long_only:
-        constrs.append(cp.min(weights) >= 0)
+        constrs.append(weights >= 0)
 
     prob = cp.Problem(obj, constrs)
     prob.solve()
