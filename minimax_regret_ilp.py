@@ -34,19 +34,13 @@ def minmax_regret_ilp(users, num_prods):
 
             constraints.append((X[i,j] <= y[j])) 
 
-    for i in range(n):
-        for j in range(n):
+
             # if j's desired return is larger than i's
             # we cant give j's product to i
             if users[j][0] > users[i][0]:
                 constraints.append( ( X[i,j] == 0 )  )
 
 
-
-
-
-    for i in range(n):
-        for j in range(n):
             # the regret of user i is the difference between his desired return
             # and the return he gets from his assigned product
             g = users[i][1]
@@ -59,8 +53,3 @@ def minmax_regret_ilp(users, num_prods):
     prob = cp.Problem(objective,constraints)
 
     return X,y,B,group_regrets,prob
-
-
-u = sorted([[random.random()*5,random.choice(range(2))] for i in range(5) ])
-
-mri = minmax_regret_ilp
