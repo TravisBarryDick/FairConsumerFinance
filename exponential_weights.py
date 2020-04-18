@@ -26,7 +26,7 @@ class ExponentialWeights:
         arm.
         """
         # Multiplicative weight updates become additive in log space
-        self.logweights -= self.stepsize * self.stepsize
+        self.logweights -= self.stepsize * losses
 
     def get_distribution(self):
         "Returns the distribution over arms given by the current weights."
