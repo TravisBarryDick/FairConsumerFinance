@@ -110,3 +110,32 @@ def regret_minimizing_products(returns, k):
     products = breaks[0:k]
 
     return regret, products
+
+
+def weighted_regret_minimizing_products(returns, weights, k):
+    """
+    Same as regret_minimizing_products except each consumer has a real-valued
+    and the goal is to minimize the total weighted regret.
+    """
+    # As in regret_minimizing_products, it is equivalent and slightly simpler
+    # to find the set of products that maximize weighted return.
+
+    # The following loss function computes the negative total weighted return
+    # for consumers {i, ..., j-1} when assigned to a product defined by
+    # consumer i. Uses a pre-computed cumulative sum of the weights so that it
+    # costs O(1) time per evaluation.
+    weights_csum = np.cumsum(weights)
+
+    def loss_fn(i, j):
+        if i == 0:
+            return -returns[0] * weights_csum[j-1]
+        else:
+            return -returns[i] * (weights_csum[j-1] - weights_csum[i-1])
+
+    # Call interval_partition to find the products that maximize revenue.
+    loss, breaks = interval_partition(len(returns), k, loss_fn)
+
+    # Calculate the regret and extract the set of products.
+    regret = np.dot(weights, returns) + loss
+    products = breaks[0:k]
+    return regret, products
