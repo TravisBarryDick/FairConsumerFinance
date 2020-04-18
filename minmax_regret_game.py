@@ -4,7 +4,7 @@ from exponential_weights import ExponentialWeights
 from regret_minimization_dp import weighted_regret_minimizing_products
 
 
-def minimax_regret_game(returns, groups, num_groups, num_prods, T):
+def minmax_regret_game(returns, groups, num_groups, num_prods, T):
     """
     The inputs `returns`, `groups`, and `num_groups` describe a collection of
     consumers, where `num_groups` is the number of groups and, for consumer `i`,
