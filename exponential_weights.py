@@ -4,12 +4,14 @@ import numpy as np
 class ExponentialWeights:
     """
     A log-space implementation of the exponential weights algorithm. After T
-    rounds with losses in [0,H], this algorithm has regret bounded by:
+    rounds with losses in an interval of width H (i.e., in [a, a+H]), the regret
+    of the algorithm can be bounded as
 
-    Regret(T) <= H(ln(n_arms)/stepsize + T * stepsize / 8).
+    Regret(T) <= stepsize * H^2 * T / 8 + ln(n_arms)
 
-    Setting stepsize = sqrt(8 ln(n_arms) / T) gives the best bound of
-    Regret(T) <= 2H*sqrt(ln(n_arms)T/8).
+    Setting stepsize = sqrt(8 ln(N) / T) / H gives the best bound of
+
+    Regret(T) <= 2 H sqrt(ln(N) T / 8)
     """
 
     def __init__(self, n_arms, stepsize):
