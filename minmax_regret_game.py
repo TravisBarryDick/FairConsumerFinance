@@ -60,7 +60,9 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T):
 
     # Instantiate an instance of the exponential weights algorithm that
     # achieves O(sqrt(T)) regret after T rounds.
-    stepsize = np.sqrt(8 * np.log(num_groups) / T)
+    max_group_regret = np.max([np.sum(returns[groups == i])
+                               for i in range(num_groups)])
+    stepsize = np.sqrt(8 * np.log(num_groups) / T) / max_group_regret
     group_player = ExponentialWeights(num_groups, stepsize)
 
     # Allocate numpy arrays to store the products, weights, and regrets from
