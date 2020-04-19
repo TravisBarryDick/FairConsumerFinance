@@ -1,11 +1,23 @@
 import cvxpy as cp
 import numpy as np
 
+
+def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods):
+    """
+    This is a simple wrapper around minmax_regret_ilp so that it has nearly the
+    same interface as the functions in minmax_regret_game.
+    """
+    users = [(r, g) for (r, g) in zip(returns, groups)]
+    minmax_regret, X, y, group_regrets = minmax_regret_ilp(users, num_prods)
+    products = np.flatnonzero(y == 1)
+    return float(minmax_regret), products
+
+
 def minmax_regret_ilp(users, num_prods):
 
     # this is preliminary
 
-    # for convenience here, i've assumed `users` is a list of pairs 
+    # for convenience here, i've assumed `users` is a list of pairs
     # of the form (return_threshold, group_membership)
 
     # extract some useful values
@@ -43,7 +55,7 @@ def minmax_regret_ilp(users, num_prods):
         for j in range(n):
 
             # we cant assign user i to product j if product j isnt in our set of products
-            constraints.append((X[i,j] <= y[j])) 
+            constraints.append((X[i,j] <= y[j]))
 
             # if j's desired return is larger than i's
             # we cant give j's product to i
