@@ -4,7 +4,8 @@ from exponential_weights import ExponentialWeights
 from regret_minimization_dp import weighted_regret_minimizing_products
 
 
-def minmax_regret_game(returns, groups, num_groups, num_prods, T):
+def minmax_regret_game(returns, groups, num_groups, num_prods, T,
+                       use_avg_regret=True):
     """
     The inputs `returns`, `groups`, and `num_groups` describe a collection of
     consumers, where `num_groups` is the number of groups and, for consumer `i`,
@@ -13,10 +14,14 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T):
     by returns so that `returns[i] <= returns[i+1]` for all i.
 
     Simulates a two-player game between:
-    1. An auditor that assigns weights to each group to maximize total group-
-       weighted regret. (ExponentialWeights)
-    2. A product player that chooses products to minimize the total group-
-       weighted regret. (Best Response)
+    1. An auditor that assigns weights to each group to maximize total or
+       average group-weighted regret. (ExponentialWeights)
+    2. A product player that chooses products to minimize the total or average
+       group-weighted regret. (Best Response)
+
+    If `use_avg_regret` is set to `True`, then the regret of each group is
+    computed as the average regret of its members. Otherwise, the total regret
+    is used.
 
     The `num_prods` products chosen by the product player on each round are the
     indices of `num_prods` consumers (who define the returns of the
@@ -27,17 +32,19 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T):
        product player on round `t` of the game.
     2. `group_weights`, where `group_weights[t,:]` contain the group weights
        chosen by the auditor on round `t` of the game.
-    3. `group_regrets`, where `group_regrets[t,i]` contains the total regret
-        for consumers in group `i` using `products[t,:]`.
+    3. `group_regrets`, where `group_regrets[t,i]` contains the total or
+        average regret for consumers in group `i` using `products[t,:]`.
 
     The uniform distributions over the rows of `products` and `group_weights`
     provide an approximate minmax equilibrium for the game. In particular, the
     uniform distribution over the rows of `products` gives a mixed set of
-    products that minimizes expected regret of the most regreftul group for a
-    set of `num_prods` products sampled from the distribution.
+    products that minimizes expected total or average regret of the most
+    regreftul group for a set of `num_prods` products sampled from the
+    distribution.
     """
 
     num_consumers = len(returns)
+    group_sizes = np.array([sum(groups == i) for i in range(num_groups)])
 
     # Helper function that converts weights over the groups to weights over the
     # consumers. Each consumer's weight is a copy of their group's weight.
@@ -45,6 +52,8 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T):
         weights = np.zeros(num_consumers)
         for g in range(0, num_groups):
             weights[groups == g] = group_weights[g]
+            if use_avg_regret:
+                weights[groups == g] /= group_sizes[g]
         return weights
 
     # Helper function to compute the total regret of each group (i.e., the
@@ -56,12 +65,17 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T):
         for i in range(0, num_consumers):
             best_prod_return = np.max(prod_returns[prod_returns <= returns[i]])
             regrets[groups[i]] += returns[i] - best_prod_return
+        if use_avg_regret:
+            regrets /= group_sizes
         return regrets
 
     # Instantiate an instance of the exponential weights algorithm that
     # achieves O(sqrt(T)) regret after T rounds.
-    max_group_regret = np.max([np.sum(returns[groups == i])
-                               for i in range(num_groups)])
+    max_group_regrets = np.array([np.sum(returns[groups == i])
+                                  for i in range(num_groups)])
+    if use_avg_regret:
+        max_group_regrets / group_sizes
+    max_group_regret = np.max(max_group_regrets)
     stepsize = np.sqrt(8 * np.log(num_groups) / T) / max_group_regret
     group_player = ExponentialWeights(num_groups, stepsize)
 
