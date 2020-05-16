@@ -27,7 +27,7 @@ class ExponentialWeights:
         Given a numpy vector of n_arms losses, updates the weights for each
         arm.
         """
-        # Multiplicative weight updates become additive in log space
+        # Exponential weight updates become additive in log space
         self.logweights -= self.stepsize * losses
 
     def get_distribution(self):
