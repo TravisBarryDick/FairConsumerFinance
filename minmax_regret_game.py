@@ -2,6 +2,7 @@ import numpy as np
 
 from exponential_weights import ExponentialWeights
 from regret_minimization_dp import weighted_regret_minimizing_products
+from utils import get_group_regrets
 
 
 def minmax_regret_game(returns, groups, num_groups, num_prods, T,
@@ -56,19 +57,6 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T,
                 weights[groups == g] /= group_sizes[g]
         return weights
 
-    # Helper function to compute the total regret of each group (i.e., the
-    # total return they are losing compared to the bespoke strategy).
-    def get_group_regrets(products):
-        # TODO: This can probably be optimized quite a bit with vectorization
-        regrets = np.zeros(num_groups)
-        prod_returns = returns[products]
-        for i in range(0, num_consumers):
-            best_prod_return = np.max(prod_returns[prod_returns <= returns[i]])
-            regrets[groups[i]] += returns[i] - best_prod_return
-        if use_avg_regret:
-            regrets /= group_sizes
-        return regrets
-
     # Instantiate an instance of the exponential weights algorithm that
     # achieves O(sqrt(T)) regret after T rounds.
     max_group_regrets = np.array([np.sum(returns[groups == i])
@@ -91,7 +79,9 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T,
         consumer_weights = group_to_consumer_weights(group_weights[t, :])
         products[t, :] = weighted_regret_minimizing_products(
             returns, consumer_weights, num_prods)[1]
-        group_regrets[t, :] = get_group_regrets(products[t, :])
+        group_regrets[t, :] = get_group_regrets(returns, groups, num_groups,
+                                                products[t, :],
+                                                use_avg_regret=use_avg_regret)
         # Note: We negate the vector group_regrets[t, :] because the group
         # player is trying to maximize weighted-group regret, so high group
         # regret corresponds to low loss for the group player.
