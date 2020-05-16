@@ -77,7 +77,7 @@ def interval_partition(n, k, loss_fn):
     return loss_table[n, k], optimal_breaks
 
 
-def regret_minimizing_products(returns, k):
+def regret_minimizing_products(returns, k, use_avg_regret=True):
     """
     Finds a set of k products that minimizes regret when each consumer is
     assigned to the highest return product that does not exceed their risk
@@ -104,6 +104,8 @@ def regret_minimizing_products(returns, k):
     # The regret is the total bespoke return plus the loss from
     # interval_partition
     regret = np.sum(returns) + loss
+    if use_avg_regret:
+        regret /= len(returns)
 
     # The indices of the optimal products are just the first k elements of the
     # breakpoints array returned by interval_partition

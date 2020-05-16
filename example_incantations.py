@@ -75,7 +75,7 @@ consumer_returns = np.array([bespoke_return(r) for r in consumer_risks])
 regret, products = regret_minimization_dp.regret_minimizing_products(
     consumer_returns, 2)
 
-# regret = 0.0009497016635259094
+# regret = 0.0001899403327051819
 # products = array([0, 2])
 
 # Note: the products array gives the indices of the consumers that define the
@@ -90,7 +90,7 @@ regret, products = regret_minimization_dp.weighted_regret_minimizing_products(
 
 # Note: this is the same as the above problem, except we put 0 weight on all
 #       consumers except for a weight of 2 on the riskiest consumer. The
-#       solution uses it's one movable product to serve that consumer.
+#       solution uses its one movable product to serve that consumer.
 
 # Note: we really only need the weighted version of the DP for the two-player
 #       game
