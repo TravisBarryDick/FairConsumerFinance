@@ -1,6 +1,8 @@
 import cvxpy as cp
 import numpy as np
 
+from utils import get_group_regrets
+
 
 def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods,
                               use_avg_regret=True):
@@ -12,7 +14,9 @@ def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods,
     minmax_regret, X, y, group_regrets = minmax_regret_ilp(
         users, num_prods, use_avg_regret)
     products = np.flatnonzero(y == 1)
-    return float(minmax_regret), products
+    group_regrets = get_group_regrets(returns, groups, num_groups, products,
+                                      use_avg_regret=use_avg_regret)
+    return float(minmax_regret), group_regrets, products
 
 
 def minmax_regret_ilp(users, num_prods, use_avg_regret=True):
