@@ -73,7 +73,7 @@ consumer_returns = np.array([bespoke_return(r) for r in consumer_risks])
 ######################################
 
 regret, products = regret_minimization_dp.regret_minimizing_products(
-    consumer_returns, 2)
+    consumer_returns, 2, use_avg_regret=False)
 
 # regret = 0.0001899403327051819
 # products = array([0, 2])
@@ -104,9 +104,10 @@ regret, products = regret_minimization_dp.weighted_regret_minimizing_products(
 consumer_groups = np.array([0, 0, 0, 1, 1])
 num_groups = 2
 
-regret, products = minmax_regret_ilp.minmax_regret_ilp_wrapper(
-    consumer_returns, consumer_groups, num_groups, 3)
-# regret = 0.00031718630921291033
+max_regret, group_regrets, products = minmax_regret_ilp.minmax_regret_ilp_wrapper(
+    consumer_returns, consumer_groups, num_groups, 3, use_avg_regret=False)
+# max_regret = 0.00031718630921291033
+# group_regrets = array([0.00025371, 0.00031719])
 # products = array([0, 1, 3])
 
 # Note: The 3 producst that minimize overall regret are array([0, 2, 4]), so
@@ -123,7 +124,7 @@ regret, products = minmax_regret_ilp.minmax_regret_ilp_wrapper(
 # bit too short to see much interesting stuff, but I wanted to keep the
 # printouts short.
 products, group_weights, group_regrets = minmax_regret_game.minmax_regret_game(
-    consumer_returns, consumer_groups, num_groups, 3, 5)
+    consumer_returns, consumer_groups, num_groups, 3, 5, use_avg_regret=False)
 
 # products =
 # array([[0, 2, 4],
