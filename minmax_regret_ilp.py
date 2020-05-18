@@ -1,7 +1,8 @@
 import cvxpy as cp
 import numpy as np
 
-from utils import get_group_regrets
+from utils import get_group_regrets, check_returns_argument, \
+                  check_group_arguments
 
 
 def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods,
@@ -10,6 +11,8 @@ def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods,
     This is a simple wrapper around minmax_regret_ilp so that it has nearly the
     same interface as the functions in minmax_regret_game.
     """
+    check_returns_argument(returns)
+    check_group_arguments(groups, num_groups)
     users = [(r, g) for (r, g) in zip(returns, groups)]
     minmax_regret, X, y, group_regrets = minmax_regret_ilp(
         users, num_prods, use_avg_regret)

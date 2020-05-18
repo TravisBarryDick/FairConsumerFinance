@@ -2,7 +2,8 @@ import numpy as np
 
 from exponential_weights import ExponentialWeights
 from regret_minimization_dp import weighted_regret_minimizing_products
-from utils import get_group_regrets
+from utils import get_group_regrets, check_returns_argument, \
+                  check_group_arguments
 
 
 def minmax_regret_game(returns, groups, num_groups, num_prods, T,
@@ -45,7 +46,8 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T,
     regreftul group for a set of `num_prods` products sampled from the
     distribution.
     """
-
+    check_returns_argument(returns)
+    check_group_arguments(groups, num_groups)
     num_consumers = len(returns)
     group_sizes = np.array([sum(groups == i) for i in range(num_groups)])
 

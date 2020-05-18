@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+from utils import check_returns_argument
 
 def interval_partition(n, k, loss_fn):
     """
@@ -87,6 +88,7 @@ def regret_minimizing_products(returns, k, use_avg_regret=True):
     risk limits define the regret-minimizing products, as well as the total
     regret.
     """
+    check_returns_argument(returns)
     # It is equivalent to find the set of k products that maximize return, and
     # slightly simpler to code. Therefore, we use interval_partition to compute
     # the return maximizing products and then slightly massage the output.
@@ -126,6 +128,7 @@ def weighted_regret_minimizing_products(returns, weights, k):
     # for consumers {i, ..., j-1} when assigned to a product defined by
     # consumer i. Uses a pre-computed cumulative sum of the weights so that it
     # costs O(1) time per evaluation.
+    check_returns_argument(returns)
     weights_csum = np.cumsum(weights)
 
     def loss_fn(i, j):

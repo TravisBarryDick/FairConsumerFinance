@@ -25,3 +25,27 @@ def get_group_regrets(returns, groups, num_groups, products,
     if use_avg_regret:
         group_regrets /= group_sizes
     return group_regrets
+
+
+# --- Type Checking ---
+
+def check_returns_argument(returns):
+    """
+    Asserts that returns is a numpy array sorted in non-decreasing order.
+    """
+    assert type(returns) is np.ndarray, "returns must be a numpy array"
+    # np.diff computes the vector [returns[i+1] - returns[i] for i]. The returns
+    # vector is in sorted order only when all of these differences are >= 0.
+    assert all(np.diff(returns) >= 0), \
+        "returns must be sorted in non-decreasing order"
+
+
+def check_group_arguments(groups, num_groups):
+    """
+    Asserts that groups is an integer numpy array with entries in
+    {0,...,num_groups - 1}.
+    """
+    assert type(groups) is np.ndarray and groups.dtype == int, \
+        "groups must be a numpy array with dtype == int"
+    assert all([g in range(num_groups) for g in groups]), \
+        "group indices must be in {0, ..., num_groups-1}."
