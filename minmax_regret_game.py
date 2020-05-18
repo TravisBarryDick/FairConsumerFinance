@@ -6,13 +6,15 @@ from utils import get_group_regrets
 
 
 def minmax_regret_game(returns, groups, num_groups, num_prods, T,
-                       use_avg_regret=True):
+                       use_avg_regret=True, step_size=None):
     """
     The inputs `returns`, `groups`, and `num_groups` describe a collection of
     consumers, where `num_groups` is the number of groups and, for consumer `i`,
     `returns[i]` is the return of their bespoke portfolio, `groups[i]` their
     group index in `range(num_groups)`. It is assumed that consumers are sorted
-    by returns so that `returns[i] <= returns[i+1]` for all i.
+    by returns so that `returns[i] <= returns[i+1]` for all i. If `step_size`
+    is provided, that step size is used, otherwise the `step_size` is computed
+    from a theoretical bound (and may lead to very slow convergence).
 
     Simulates a two-player game between:
     1. An auditor that assigns weights to each group to maximize total or
@@ -57,15 +59,18 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T,
                 weights[groups == g] /= group_sizes[g]
         return weights
 
-    # Instantiate an instance of the exponential weights algorithm that
-    # achieves O(sqrt(T)) regret after T rounds.
-    max_group_regrets = np.array([np.sum(returns[groups == i])
-                                  for i in range(num_groups)])
-    if use_avg_regret:
-        max_group_regrets / group_sizes
-    max_group_regret = np.max(max_group_regrets)
-    stepsize = np.sqrt(8 * np.log(num_groups) / T) / max_group_regret
-    group_player = ExponentialWeights(num_groups, stepsize)
+    # If the step_size wasn't specified, try to compute a reasonable one from
+    # the theoretical bound
+    if step_size is None:
+        max_group_regrets = np.array([np.sum(returns[groups == i])
+                                      for i in range(num_groups)])
+        if use_avg_regret:
+            max_group_regrets / group_sizes
+        max_group_regret = np.max(max_group_regrets)
+        step_size = np.sqrt(8 * np.log(num_groups) / T) / max_group_regret
+        print(f"No step_size specified, using step_size = {step_size}")
+
+    group_player = ExponentialWeights(num_groups, step_size)
 
     # Allocate numpy arrays to store the products, weights, and regrets from
     # each round of the game.
