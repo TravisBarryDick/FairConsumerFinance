@@ -93,4 +93,5 @@ def minmax_regret_ilp(users, num_prods, use_avg_regret=True):
 
     prob.solve()
 
-    return B.value, np.around(X.value), np.around(y.value), [v.value for v in group_regrets.values()]
+    return B.value, np.around(X.value), np.around(y.value), \
+        [v.value for v in group_regrets.values()]

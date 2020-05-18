@@ -3,6 +3,7 @@ import math
 
 from utils import check_returns_argument
 
+
 def interval_partition(n, k, loss_fn):
     """
     Finds a loss-minimizing partition of the integers {0, ..., n-1} into k
