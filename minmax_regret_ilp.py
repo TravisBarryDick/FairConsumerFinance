@@ -6,7 +6,7 @@ from utils import get_group_regrets, check_returns_argument, \
 
 
 def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods,
-                              use_avg_regret=True):
+                              use_avg_regret=True, solver_str=None):
     """
     This is a simple wrapper around minmax_regret_ilp so that it has nearly the
     same interface as the functions in minmax_regret_game.
@@ -15,14 +15,14 @@ def minmax_regret_ilp_wrapper(returns, groups, num_groups, num_prods,
     check_group_arguments(groups, num_groups)
     users = [(r, g) for (r, g) in zip(returns, groups)]
     minmax_regret, X, y, group_regrets = minmax_regret_ilp(
-        users, num_prods, use_avg_regret)
+        users, num_prods, use_avg_regret, solver_str)
     products = np.flatnonzero(y == 1)
     group_regrets = get_group_regrets(returns, groups, num_groups, products,
                                       use_avg_regret=use_avg_regret)
     return float(minmax_regret), group_regrets, products
 
 
-def minmax_regret_ilp(users, num_prods, use_avg_regret=True):
+def minmax_regret_ilp(users, num_prods, use_avg_regret=True, solver_str=None):
 
     # this is preliminary
 
@@ -90,8 +90,13 @@ def minmax_regret_ilp(users, num_prods, use_avg_regret=True):
         constraints.append((r <= B))
 
     prob = cp.Problem(objective, constraints)
-
-    prob.solve()
+    solvers = {'GUROBI': cp.GUROBI}
+    if solver_str is not None:
+        solver = solvers[solver_str]
+        # eps_abs=1e-8
+        prob.solve(solver=solver)
+    else:
+        prob.solve()
 
     return B.value, np.around(X.value), np.around(y.value), \
         [v.value for v in group_regrets.values()]
