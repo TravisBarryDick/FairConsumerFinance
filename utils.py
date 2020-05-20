@@ -9,10 +9,12 @@ def get_group_regrets(returns, groups, num_groups, products,
     non-decreasing order, the `groups` vector gives the group index for each
     consumer in `range(num_groups)`, and the `products` vector contains the
     indices of the consumers defining each product. I.e., the return of the
-    `i`th product is `returns[products[i]]`. If `use_avg_regret=True` then
-    returns the average regret for each group, otherwise the total regret.
+    `i`th product is `returns[products[i]]`. The product indices must be in
+    non-decreasing order. If `use_avg_regret=True` then returns the average
+    regret for each group, otherwise the total regret.
     """
-
+    check_group_arguments(groups, num_groups)
+    check_products_argument(returns, products)
     group_regrets = np.zeros(num_groups)
     group_sizes = np.zeros(num_groups)
     p_ix = len(products)-1
@@ -49,3 +51,16 @@ def check_group_arguments(groups, num_groups):
         "groups must be a numpy array with dtype == int"
     assert all([g in range(num_groups) for g in groups]), \
         "group indices must be in {0, ..., num_groups-1}."
+
+
+def check_products_argument(returns, products):
+    """
+    Asserts that products is an integer numpy array with non-decreasing entries
+    in {0, ..., len(returns)-1}.
+    """
+    assert type(products) is np.ndarray and products.dtype == int, \
+        "products must be a numpy array with dtype == int"
+    assert all([p in range(len(returns)) for p in products]), \
+        "product indices must be in {0, ..., len(returns)-1}"
+    assert all(np.diff(products) >= 0), \
+        "product indices must be sorted in non-decreasing order"
