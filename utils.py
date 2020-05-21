@@ -18,7 +18,7 @@ def get_group_regrets(returns, groups, num_groups, products,
     group_regrets = np.zeros(num_groups)
     group_sizes = np.zeros(num_groups)
     p_ix = len(products)-1
-    for c_ix in range(len(returns)-1, 0, -1):
+    for c_ix in range(len(returns)-1, -1, -1):
         g_ix = groups[c_ix]
         group_sizes[g_ix] += 1
         while returns[products[p_ix]] > returns[c_ix]:
