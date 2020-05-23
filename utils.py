@@ -47,8 +47,9 @@ def check_group_arguments(groups, num_groups):
     Asserts that groups is an integer numpy array with entries in
     {0,...,num_groups - 1}.
     """
-    assert type(groups) is np.ndarray and groups.dtype == int, \
-        "groups must be a numpy array with dtype == int"
+    assert type(groups) is np.ndarray and \
+        np.issubdtype(groups.dtype, np.integer), \
+        "groups must be a numpy array with integral dtype"
     assert all([g in range(num_groups) for g in groups]), \
         "group indices must be in {0, ..., num_groups-1}."
 
@@ -58,8 +59,9 @@ def check_products_argument(returns, products):
     Asserts that products is an integer numpy array with non-decreasing entries
     in {0, ..., len(returns)-1}.
     """
-    assert type(products) is np.ndarray and products.dtype == int, \
-        "products must be a numpy array with dtype == int"
+    assert type(products) is np.ndarray and \
+        np.issubdtype(products.dtype, np.integer), \
+        "products must be a numpy array with integral dtype"
     assert all([p in range(len(returns)) for p in products]), \
         "product indices must be in {0, ..., len(returns)-1}"
     assert all(np.diff(products) >= 0), \
