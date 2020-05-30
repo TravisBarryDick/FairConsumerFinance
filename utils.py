@@ -25,7 +25,9 @@ def get_group_regrets(returns, groups, num_groups, products,
             p_ix -= 1
         group_regrets[g_ix] += returns[c_ix] - returns[products[p_ix]]
     if use_avg_regret:
-        group_regrets /= group_sizes
+        for g in range(num_groups):
+            if group_sizes[g] > 0:
+                group_regrets[g] /= group_sizes[g]
     return group_regrets
 
 

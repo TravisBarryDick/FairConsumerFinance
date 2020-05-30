@@ -57,7 +57,7 @@ def minmax_regret_game(returns, groups, num_groups, num_prods, T,
         weights = np.zeros(num_consumers)
         for g in range(0, num_groups):
             weights[groups == g] = group_weights[g]
-            if use_avg_regret:
+            if use_avg_regret and group_sizes[g] > 0:
                 weights[groups == g] /= group_sizes[g]
         return weights
 
