@@ -9,8 +9,6 @@ Suggested citation: *coming soon*
 
 
 
-
-
 -----
 
 Usage: `python experiments_paper.py e1 e2 e3...` where the  `e`'s are the experiments to run.  
